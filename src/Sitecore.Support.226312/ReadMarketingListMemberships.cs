@@ -61,16 +61,20 @@ namespace Sitecore.Support.DataExchange.Providers.DynamicsCrm.MarketingListMembe
           Entity list = enumerator2.Current;
           if (list.GetAttributeValue<bool>("type"))
           {
-            FetchExpression query2 = new FetchExpression(list.GetAttributeValue<string>("query"));
-            EntityCollection entityCollection = service.RetrieveMultiple(query2);
-            foreach (Entity entity2 in entityCollection.Entities)
+            string fetchXmlQuery = list.GetAttributeValue<string>("query");
+            if (!string.IsNullOrWhiteSpace(fetchXmlQuery))
             {
-              MembershipModel membershipModel2 = new MembershipModel();
-              id = entity2.Id;
-              membershipModel2.EntityId = id.ToString();
-              id = list.Id;
-              membershipModel2.RelatedEntityId = id.ToString();
-              yield return membershipModel2;
+              FetchExpression query2 = new FetchExpression(fetchXmlQuery);
+              EntityCollection entityCollection = service.RetrieveMultiple(query2);
+              foreach (Entity entity2 in entityCollection.Entities)
+              {
+                MembershipModel membershipModel2 = new MembershipModel();
+                id = entity2.Id;
+                membershipModel2.EntityId = id.ToString();
+                id = list.Id;
+                membershipModel2.RelatedEntityId = id.ToString();
+                yield return membershipModel2;
+              }
             }
           }
         }
